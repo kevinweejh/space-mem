@@ -1,35 +1,75 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import Game from './Game';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentScore, setCurrentScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+
+  const [urlArray, setUrlArray] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [gameStatus, setGameStatus] = useState('playing');
+
+  const apiKey = import.meta.env.VITE_API_KEY;
+
+  const getApods = async () => {
+    const response = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${apiKey}&count=4&thumbs=true`);
+    const dataObj = await response.json();
+    const filteredDataObj = dataObj.filter((item) => item.media_type === 'image');
+    const dataList = filteredDataObj.map((item) => item.url);
+    return dataList;
+  };
+
+  // For initial fetch
+  useEffect(() => {
+    getApods()
+      .then((fetchedUrlArray) => {
+        setUrlArray(fetchedUrlArray);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        setError(error);
+        setIsLoading(false);
+      });
+  }, []); // Empty dependency array ensure effect run only once on mount
+
+  // For restarting the game
+  useEffect(() => {
+    if (gameStatus === 'game over' || gameStatus === 'win') {
+      getApods()
+        .then((fetchedUrlArray) => {
+          setUrlArray(fetchedUrlArray);
+          setGameStatus('playing');
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+    }
+  }, [gameStatus]);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading data.</p>;
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="bg-[#fdef87]">
+        <h1>space-mem</h1>
+
+        <Game
+          currentScore={currentScore}
+          setCurrentScore={setCurrentScore}
+          highScore={highScore}
+          setHighScore={setHighScore}
+          urlArray={urlArray}
+          gameStatus={gameStatus}
+          setGameStatus={setGameStatus}
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
