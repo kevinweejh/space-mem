@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Game from './Game';
+import TextBlock from './TextBlock';
 
 function App() {
   const [currentScore, setCurrentScore] = useState(0);
@@ -11,6 +12,8 @@ function App() {
   const [error, setError] = useState(null);
 
   const [gameStatus, setGameStatus] = useState('playing');
+
+  const [activeIndex, setActiveIndex] = useState(null);
 
   const apiKey = import.meta.env.VITE_API_KEY;
 
@@ -53,10 +56,42 @@ function App() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading data.</p>;
 
+  const handleButtonPress = (index) => {
+    if (activeIndex === null) {
+      setActiveIndex(index);
+      return;
+    }
+
+    if (activeIndex !== index) {
+      setActiveIndex(index);
+      return;
+    }
+
+    if (activeIndex === index) {
+      setActiveIndex(null);
+      return;
+    }
+  };
+
   return (
     <>
       <div className="bg-[#fdef87] relative min-h-screen flex flex-col items-center">
         <img src="src/assets/space-mem.png" alt="rocket logo" className="w-3/4 md:w-1/4"></img>
+        <div className="flex gap-4 mb-4">
+          <button
+            className="text-[#f62f83] border border-[#f62f83] rounded-full py-2 px-4 hover:bg-gray-200"
+            onClick={() => handleButtonPress(0)}
+          >
+            Instructions
+          </button>
+          <button
+            className="text-[#f62f83] border border-[#f62f83] rounded-full py-2 px-4 hover:bg-gray-200"
+            onClick={() => handleButtonPress(1)}
+          >
+            Inspiration
+          </button>
+        </div>
+        <TextBlock activeIndex={activeIndex} />
         <Game
           currentScore={currentScore}
           setCurrentScore={setCurrentScore}
