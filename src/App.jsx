@@ -55,9 +55,8 @@ function App() {
 
   return (
     <>
-      <div className="bg-[#fdef87]">
-        <h1>space-mem</h1>
-
+      <div className="bg-[#fdef87] relative min-h-screen flex flex-col items-center">
+        <img src="src/assets/space-mem.png" alt="rocket logo" className="w-3/4 md:w-1/4"></img>
         <Game
           currentScore={currentScore}
           setCurrentScore={setCurrentScore}

@@ -51,15 +51,18 @@ const Game = ({ currentScore, setCurrentScore, highScore, setHighScore, urlArray
 
   return (
     <>
-      <p>Current score: {currentScore}</p>
-      <p>High score: {highScore}</p>
-      <p>
-        {gameStatus === 'game over' && 'Game over'}
-        {gameStatus === 'win' && 'You win'}
-      </p>
-      <div className="grid grid-cols-2 md:grid-cols-4">
+      <p className="text-[#f62f83] text-lg font-semibold">Current score: {currentScore}</p>
+      <p className="text-[#f62f83] text-lg font-semibold">High score: {highScore}</p>
+      <hr></hr>
+      <div className="h-max">
+        <p className="text-[#f62f83] text-lg font-semibold">
+          {gameStatus === 'game over' ? (gameStatus === 'win' ? '--- You Win ---' : '--- Game Over ---') : ''}
+        </p>
+      </div>
+
+      <div className="mt-4 w-screen grid grid-cols-2 md:grid-cols-4">
         {renderOrder.map((url) => (
-          <div key={url} className="col-span-1 h-0 pb-[100%] relative overflow-hidden float-left box-border">
+          <div key={url} className="col-span-1 aspect-square relative rounded-md m-3 border-[#f62f83] border-8">
             <Image url={url} guessArray={guessArray} setGuessArray={setGuessArray} />
           </div>
         ))}
